@@ -1,0 +1,50 @@
+{
+  "$schema": "https://calm.finos.org/release/1.1/meta/calm.json",
+  "unique-id": "my-first-architecture",
+  "name": "My First Architecture",
+  "description": "A minimal CALM architecture containing a single Photo Manager node.",
+  "metadata": [
+    {
+      "created": "2025-12-02T00:00:00Z",
+      "author": "george-ball",
+      "calm-version": "1.0"
+    }
+  ],
+  "nodes": [
+    {
+      "unique-id": "photo-manager",
+      "node-type": "service",
+      "name": "Photo Manager",
+      "description": "Manages photo storage, metadata, albums, and sharing.",
+      "metadata": {
+        "version": "1.0",
+        "labels": ["photo", "manager"]
+      },
+      "capabilities": [
+        "store",
+        "organize",
+        "search",
+        "share"
+      ],
+      "interfaces": [
+        {
+          "unique-id": "photo-rest-interface",
+          "url": "https://api.example.com/photos",
+          "endpoints": [
+            {
+              "path": "/photos",
+              "methods": ["GET", "POST", "PUT", "DELETE"],
+              "protocol": "https",
+              "port": 443
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "storage": "object-store",
+        "maxUploadSizeMB": 50
+      }
+    }
+  ],
+  "relationships": []
+}

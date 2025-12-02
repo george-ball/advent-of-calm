@@ -5,7 +5,7 @@ This repository tracks my 24-day journey learning the Common Architecture Langua
 ## Progress
 
 - [x] Day 1: Install CALM CLI and Initialize Repository
-- [ ] Day 2: TBD
+- [ ] Day 2: Create Your First Node
 - [ ] Day 3: TBD
 ...
 
