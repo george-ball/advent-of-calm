@@ -1,0 +1,140 @@
+{
+  "$schema": "https://calm.finos.org/release/1.1/meta/calm.json",
+  "unique-id": "my-first-architecture",
+  "name": "My First Architecture",
+  "description": "A minimal CALM architecture containing a single Photo Manager node.",
+  "metadata": [
+    {
+      "created": "2025-12-02T00:00:00Z",
+      "author": "george-ball",
+      "calm-version": "1.1.0"
+    }
+  ],
+  "nodes": [
+    {
+      "unique-id": "photo-manager",
+      "node-type": "service",
+      "name": "Photo Manager",
+      "description": "Manages photo storage, metadata, albums, and sharing.",
+      "metadata": {
+        "version": "1.0",
+        "labels": ["photo", "manager"]
+      },
+      "capabilities": [
+        "store",
+        "organize",
+        "search",
+        "share"
+      ],
+      "interfaces": [
+        {
+          "unique-id": "photo-rest-interface",
+          "definition-url": "https://calm.example/schemas/http-interface.json",
+          "config": {
+            "url": "https://api.example.com/photos",
+            "base-path": "/photos",
+            "endpoints": [
+              {
+                "path": "/photos",
+                "methods": ["GET", "POST", "PUT", "DELETE"]
+              }
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "storage": "object-store",
+        "maxUploadSizeMB": 50
+      }
+    },
+    {
+      "unique-id": "photo-database",
+      "node-type": "database",
+      "name": "Photo Database",
+      "description": "Primary database storing photos and related metadata for the Photo Manager service.",
+      "metadata": {
+        "engine": "postgresql",
+        "version": "14",
+        "storage": "managed"
+      },
+      "interfaces": [
+        {
+          "unique-id": "photo-db-connection",
+          "definition-url": "https://calm.example/schemas/jdbc-interface.json",
+          "config": {
+            "host": "photo-db.internal",
+            "port": 5432,
+            "protocol": "JDBC",
+            "jdbc-url": "jdbc:postgresql://photo-db.internal:5432/photos"
+          }
+        }
+      ],
+      "properties": {
+        "replication": {"mode": "async"},
+        "backup": {"frequency": "daily"}
+      }
+    },
+    {
+      "unique-id": "photo-system",
+      "node-type": "system",
+      "name": "Photo System",
+      "description": "Overall system grouping the Photo Manager service and the Photo Database.",
+      "metadata": {
+        "owner": "Architecture Team",
+        "environment": "development"
+      }
+    },
+    {
+      "unique-id": "end-user",
+      "node-type": "actor",
+      "name": "End User",
+      "description": "An end user or customer who uses the Photo Manager service.",
+      "metadata": {
+        "persona": "customer"
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "unique-id": "photo-manager-connects-photo-database",
+      "description": "Photo Manager connects to the Photo Database to read/write photo records and metadata.",
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "photo-manager",
+            "interfaces": ["photo-rest-interface"]
+          },
+          "destination": {
+            "node": "photo-database",
+            "interfaces": ["photo-db-connection"]
+          }
+        }
+      },
+      "protocol": "JDBC",
+      "metadata": {
+        "port": 5432,
+        "ssl": true
+      }
+    },
+    {
+      "unique-id": "end-user-interacts-photo-manager",
+      "description": "End user interacts with the Photo Manager service to upload, view and manage photos.",
+      "relationship-type": {
+        "interacts": {
+          "actor": "end-user",
+          "nodes": ["photo-manager"]
+        }
+      }
+    },
+    {
+      "unique-id": "photo-system-composed-of",
+      "description": "The Photo System is composed of the Photo Manager service and the Photo Database.",
+      "relationship-type": {
+        "composed-of": {
+          "container": "photo-system",
+          "nodes": ["photo-manager", "photo-database"]
+        }
+      }
+    }
+  ]
+}
